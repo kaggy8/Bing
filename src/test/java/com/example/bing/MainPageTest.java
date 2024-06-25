@@ -9,9 +9,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
+@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class MainPageTest {
     private WebDriver driver;
 
@@ -33,6 +38,7 @@ public class MainPageTest {
     }
 
     @Test
+    @DisplayName("Search in Bing")
     public void search() {
         String input = "Selenium";
 
@@ -42,5 +48,36 @@ public class MainPageTest {
 
         WebElement searchPageField = driver.findElement(By.cssSelector("#sb_form_q"));
         assertEquals(input, searchPageField.getAttribute("value"));
+    }
+
+    @Test
+    @DisplayName("Click on Selenium")
+    public void clickOnSelenium() {
+        String input = "Selenium";
+        String currentLink = "https://www.selenium.dev/";
+
+        WebElement searchField   = driver.findElement(By.cssSelector("#sb_form_q"));
+        searchField.sendKeys(input);
+        searchField.submit();
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(6));
+        wait.until(ExpectedConditions.and(
+                ExpectedConditions.attributeContains(By.cssSelector("h2 > a[href]"), "href", "selenium"),
+                ExpectedConditions.elementToBeClickable(By.cssSelector("h2 > a[href]"))
+        ));
+
+        List<WebElement> links = driver.findElements(By.cssSelector("h2 > a[href]"));
+        clickOnIndex(links, 0);
+
+        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+        driver.switchTo().window(tabs.get(1));
+
+        String seleniumMainPage = driver.getCurrentUrl();
+        assertEquals(currentLink, seleniumMainPage);
+    }
+
+    private void clickOnIndex(List<WebElement> links, int index) {
+        links.get(index).click();
+        System.out.println(links.get(index).getText());
     }
 }
