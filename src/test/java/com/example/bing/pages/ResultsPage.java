@@ -14,8 +14,8 @@ import java.util.List;
 
 public class ResultsPage {
 
-    private WebDriver driver;
-    private WebDriverWait wait;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
     @FindBy(css = "#sb_form_q")
     private WebElement searchField;
