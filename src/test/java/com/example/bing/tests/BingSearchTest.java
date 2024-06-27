@@ -1,5 +1,7 @@
-package com.example.bing;
+package com.example.bing.tests;
 
+import com.example.bing.pages.MainPage;
+import com.example.bing.pages.ResultsPage;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-public class MainPageTest {
+public class BingSearchTest {
     private WebDriver driver;
 
     @BeforeEach
@@ -39,45 +41,32 @@ public class MainPageTest {
 
     @Test
     @DisplayName("Search in Bing")
-    public void search() {
+    public void searchFieldTest() {
         String input = "Selenium";
+        MainPage mainPage = new MainPage(driver);
+        mainPage.sendText(input);
 
-        WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
-        searchField.sendKeys(input);
-        searchField.submit();
+        ResultsPage resultsPage = new ResultsPage(driver);
 
-        WebElement searchPageField = driver.findElement(By.cssSelector("#sb_form_q"));
-        assertEquals(input, searchPageField.getAttribute("value"));
+        assertEquals(input, resultsPage.getTextFromSearchField(), "Текст не совпал");
     }
 
     @Test
     @DisplayName("Click on Selenium")
-    public void clickOnSelenium() {
+    public void searchResultTest() {
         String input = "Selenium";
         String currentLink = "https://www.selenium.dev/";
+        int indexPage = 0;
 
-        WebElement searchField   = driver.findElement(By.cssSelector("#sb_form_q"));
-        searchField.sendKeys(input);
-        searchField.submit();
+        MainPage mainPage = new MainPage(driver);
+        mainPage.sendText(input);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(6));
-        wait.until(ExpectedConditions.and(
-                ExpectedConditions.attributeContains(By.cssSelector("h2 > a[href]"), "href", "selenium"),
-                ExpectedConditions.elementToBeClickable(By.cssSelector("h2 > a[href]"))
-        ));
-
-        List<WebElement> links = driver.findElements(By.cssSelector("h2 > a[href]"));
-        clickOnIndex(links, 0);
-
-        ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-        driver.switchTo().window(tabs.get(1));
+        ResultsPage resultsPage = new ResultsPage(driver);
+        resultsPage.waitForLink();
+        resultsPage.clickOnIndex(indexPage);
+        resultsPage.switchWindow();
 
         String seleniumMainPage = driver.getCurrentUrl();
-        assertEquals(currentLink, seleniumMainPage);
-    }
-
-    private void clickOnIndex(List<WebElement> links, int index) {
-        links.get(index).click();
-        System.out.println(links.get(index).getText());
+        assertEquals(currentLink, seleniumMainPage, "Открылась не верная ссылка");
     }
 }
