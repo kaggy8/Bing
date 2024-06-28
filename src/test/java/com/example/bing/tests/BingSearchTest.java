@@ -5,10 +5,8 @@ import com.example.bing.pages.ResultsPage;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-
 import java.time.Duration;
 
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
